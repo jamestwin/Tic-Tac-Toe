@@ -5,13 +5,24 @@ const rl = readline.createInterface({
     output: process.stdout
 })
 // Color codes to add color to the game
-const reset = "\x1b[0m"
+const resetColor = "\x1b[0m"
+const resetBoldDim = "\x1b[0m"
+const resetItalic = "\x1b[0m"
+const resetUnderline = "\x1b[0m"
+const resetBlinking = "\x1b[0m"
 const red = "\x1b[91m"
 const blue = "\x1b[94m"
 const green = "\x1b[92m"
 const cyan = "\x1b[96m"
-const player1 = `${red}X${reset}`
-const player2 = `${blue}O${reset}`
+const bold = "\x1b[1m"
+const dim = "\x1b[2m"
+const italic = "\x1b[3m"
+const underline = "\x1b[4m"
+const blinking = "\x1b[5m"
+const player1 = `${red}X${resetColor}`
+const player2 = `${blue}O${resetColor}`
+let p1WinCount = 0
+let p2WinCount = 0
 
 // When set to true, the game will run. Else it will stop running
 let gameRunning = true
@@ -45,7 +56,7 @@ const printBoard = () => {
         -----------
          ${cyan}${gameBoard[3]} | ${gameBoard[4]} | ${gameBoard[5]}
         -----------
-         ${cyan}${gameBoard[6]} | ${gameBoard[7]} | ${gameBoard[8]}${reset}
+         ${cyan}${gameBoard[6]} | ${gameBoard[7]} | ${gameBoard[8]}${resetColor}
         `
     )
 }
@@ -64,7 +75,14 @@ const playGame = () => {
     } else if(gameBoard.indexOf(" ") === -1) {
         gameRunning = false
         console.log(
-`${cyan}Its a tie.${reset}`)
+`${cyan}Its a tie.${resetColor}
+
+          WINS	
+  ${red}PLAYER 1${resetColor}  |  ${blue}PLAYER 2${resetColor}
+-----------------------
+      ${p1WinCount}     |     ${p2WinCount}
+      
+      `)
         rl.question('Play Again? (y/n)  ', input => {
             input.trim().toLowerCase()
             if(input === 'y' || input === "yes") {
@@ -105,9 +123,17 @@ function isGame() {
                 const winChecker = array.every(el => play1Array.includes(el))
                 const winChecker2 = array.every(el => play2Array.includes(el))
                 if(winChecker) {
+                    p1WinCount++
                     gameRunning = false
                     console.log(`${green}
-${red}Player 1${reset} Wins!`)
+${red}Player 1${resetColor} Wins!
+
+          WINS	
+  ${red}PLAYER 1${resetColor}  |  ${blue}PLAYER 2${resetColor}
+-----------------------
+      ${p1WinCount}     |     ${p2WinCount}
+      
+      `)
                     rl.question('Play Again? (y/n)  ', input => {
                         input.trim().toLowerCase();
                         if(input === 'y' || input === 'yes') {
@@ -119,9 +145,18 @@ ${red}Player 1${reset} Wins!`)
                         }
                     })
                 } else if(winChecker2) {
+                    p2WinCount++
                     gameRunning = false
                     console.log(`${green}
-${blue}Player 2${reset} Wins`)
+${blue}Player 2${resetColor} Wins
+
+
+          WINS	
+  ${red}PLAYER 1${resetColor}  |  ${blue}PLAYER 2${resetColor}
+-----------------------
+      ${p1WinCount}     |     ${p2WinCount}
+      
+      `)
                     rl.question('Play Again? (y/n)  ', input => {
                         input.trim().toLowerCase()
                         if(input === 'y' || input === 'yes') {

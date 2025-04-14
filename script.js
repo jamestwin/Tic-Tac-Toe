@@ -23,6 +23,8 @@ const player1 = `${red}X${reset}`
 const player2 = `${blue}O${reset}`
 let p1WinCount = 0
 let p2WinCount = 0
+let result1
+let result2
 
 // When set to true, the game will run. Else it will stop running
 let gameRunning = true
@@ -73,9 +75,10 @@ const playGame = () => {
         printBoard()
         turnCount++
     } else if(gameBoard.indexOf(" ") === -1) {
+        printBoard()
         gameRunning = false
-        console.log(
-`${cyan}Its a tie...${reset}
+        console.log(`
+${cyan}Its a tie...${reset}
 
           WINS	
   ${underline}${red}PLAYER 1${reset}  |  ${underline}${blue}PLAYER 2${reset}
@@ -88,20 +91,25 @@ const playGame = () => {
             if(input === 'y' || input === "yes") {
                 gameBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
                 gameRunning = true
-                isGame();
+                gameLoop();
             } else {
                 rl.close()
             }
         })
     }
     else {
-        return
+        printBoard()
+        return "void"
     }
-    
 }
+
 function isGame() {
-    while(gameRunning) {
-        playGame()
+        result1 = playGame()
+        if(result1 === "void") {
+            result2 = "no delay"
+        } else {
+            result2 = "delay"
+        }
         let play1Board = [...gameBoard]
         let play2Board = [...gameBoard]
         let play1Array = []
@@ -139,7 +147,7 @@ ${blinking}Player 1 Wins${reset}
                         if(input === 'y' || input === 'yes') {
                             gameBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
                             gameRunning = true
-                            isGame();
+                            gameLoop();
                         } else {
                             rl.close()
                         }
@@ -161,7 +169,7 @@ ${blinking}Player 2 Wins${reset}
                         if(input === 'y' || input === 'yes') {
                             gameBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
                             gameRunning = true
-                            isGame();
+                            gameLoop();
                         } else {
                             rl.close()
                         }
@@ -170,7 +178,23 @@ ${blinking}Player 2 Wins${reset}
             }
         }
     }
-}
 
-isGame();
+
+    function gameLoop() {
+        if (gameRunning) {
+            console.clear()
+            isGame()
+    
+            // If the game logic requires a delay (e.g., animations), use setTimeout
+            if (result2 === "delay") {
+                setTimeout(() => {
+                    gameLoop(); // Call gameLoop again after a delay
+                }, 500); // Delay of 1 second
+            } else {
+                gameLoop() // Immediately proceed to the next iteration
+            }
+        }
+    }
+    
+    gameLoop(); // Start the game loop
 

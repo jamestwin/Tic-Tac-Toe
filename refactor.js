@@ -31,8 +31,7 @@ const player2 = {
 
 let p1WinCount = 0
 let p2WinCount = 0
-let result1
-let result2
+let turnStatus
 let gameRunning = true
 let turnCount = Math.random() < 0.5 ? 1 : 2
 
@@ -74,6 +73,7 @@ const playAgainPrompt = () => {
             gameRunning = true
             gameLoop();
         } else {
+            console.log(`${dim}Thanks for playing!${reset}`)
             rl.close()
         }
     })
@@ -103,7 +103,18 @@ const showScore = () => {
           ${p1WinCount}     |     ${p2WinCount}\n\n
           `)
 }
-const playGame = () => {
+
+const getPlayerPositions = (player) => {
+    const boardCopy = [...gameBoard]
+    const positions = []
+    while(boardCopy.indexOf(player.symbol) !== -1) {
+        let index = boardCopy.indexOf(player.symbol)
+        positions.push(index)
+        delete boardCopy[index]
+    }
+    return positions
+}
+const playMove = () => {
     const randomIndex = Math.round(Math.random() * 8)
     const symbol = playerSymbolForTurn()
     if(gameBoard[randomIndex] === " ") {
@@ -116,28 +127,16 @@ const playGame = () => {
 }
 
 
-const isGame = () => {
-    result1 = playGame()
-    let player1BoardCopy = [...gameBoard]
-    let player2BoardCopy = [...gameBoard]
-    let player1Array = []
-    let player2Array = []
-    while(player1BoardCopy.indexOf(player1.symbol) !== -1) {
-        let firstXIndex = player1BoardCopy.indexOf(player1.symbol)
-        player1Array.push(firstXIndex)
-        delete player1BoardCopy[firstXIndex]
-    }
-    while(player2BoardCopy.indexOf(player2.symbol) !== -1) {
-        let firstOIndex = player2BoardCopy.indexOf(player2.symbol)
-        player2Array.push(firstOIndex)
-        delete player2BoardCopy[firstOIndex]
-    }
+const playGame = () => {
+    turnStatus = playMove()
+    const player1Array = getPlayerPositions(player1)
+    const player2Array = getPlayerPositions(player2)
     if(player1Array.length >= 3 || player2Array.length >= 3){
         const winner = checkWinner(player1Array, player2Array)
         if (winner) {
             gameRunning = false
             winner === player1.name ? p1WinCount++ : p2WinCount++
-            console.log(`${winner} won!`)
+            console.log(`${bold}${winner} won!${bold}`)
             showScore()
             playAgainPrompt()
             return
@@ -156,8 +155,8 @@ const isGame = () => {
 const gameLoop = () => {
     if (gameRunning) {
         console.clear()
-        isGame()
-        result1 === "no delay" ? gameLoop() : setTimeout(gameLoop, 500)
+        playGame()
+        turnStatus === "no delay" ? gameLoop() : setTimeout(gameLoop, 100)
     }
 }
 

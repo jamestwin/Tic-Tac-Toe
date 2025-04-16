@@ -34,8 +34,22 @@ let p2WinCount = 0
 let turnStatus
 let gameRunning = true
 let turnCount = Math.random() < 0.5 ? 1 : 2
+let gameState = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+let gameBoard = [`${dim}1${reset}`, `${dim}2${reset}`, `${dim}3${reset}`,
+                 `${dim}4${reset}`, `${dim}5${reset}`, `${dim}6${reset}`,
+                 `${dim}7${reset}`, `${dim}8${reset}`, `${dim}9${reset}`]
 
-let gameBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+const printBoard = () => {
+    console.log(
+        `
+         ${gameBoard[0]} | ${gameBoard[1]} | ${gameBoard[2]}
+        -----------
+         ${gameBoard[3]} | ${gameBoard[4]} | ${gameBoard[5]}
+        -----------
+         ${gameBoard[6]} | ${gameBoard[7]} | ${gameBoard[8]}
+        `
+    )
+}
 
 const winStates = [
                 [0, 1, 2],
@@ -48,28 +62,19 @@ const winStates = [
                 [2, 4, 6]
 ]
 
-const printBoard = () => {
-    console.log(
-        `
-         ${gameBoard[0]} | ${gameBoard[1]} | ${gameBoard[2]}
-        -----------
-         ${gameBoard[3]} | ${gameBoard[4]} | ${gameBoard[5]}
-        -----------
-         ${gameBoard[6]} | ${gameBoard[7]} | ${gameBoard[8]}${reset}
-        `
-    )
-}
-
-const resetBoard = () => {
-    gameBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
-}
+const resetBoards = () => {
+    gameState = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+    gameBoard = [`${dim}1${reset}`, `${dim}2${reset}`, `${dim}3${reset}`,
+                 `${dim}4${reset}`, `${dim}5${reset}`, `${dim}6${reset}`,
+                 `${dim}7${reset}`, `${dim}8${reset}`, `${dim}9${reset}`]
+}   
 
 
 const playAgainPrompt = () => {
     rl.question('Play Again? (y/n):  ', input => {
         input.trim().toLowerCase();
         if(input === 'y' || input === 'yes') {
-            resetBoard()
+            resetBoards()
             gameRunning = true
             gameLoop();
         } else {
@@ -105,7 +110,7 @@ const showScore = () => {
 }
 
 const getPlayerPositions = (player) => {
-    const boardCopy = [...gameBoard]
+    const boardCopy = [...gameState]
     const positions = []
     while(boardCopy.indexOf(player.symbol) !== -1) {
         let index = boardCopy.indexOf(player.symbol)
@@ -117,7 +122,8 @@ const getPlayerPositions = (player) => {
 const playMove = () => {
     const randomIndex = Math.round(Math.random() * 8)
     const symbol = playerSymbolForTurn()
-    if(gameBoard[randomIndex] === " ") {
+    if(gameState[randomIndex] === " ") {
+        gameState[randomIndex] = symbol
         gameBoard[randomIndex] = symbol
         turnCount++
         printBoard()
@@ -141,7 +147,7 @@ const playGame = () => {
             playAgainPrompt()
             return
         }
-        if(gameBoard.indexOf(" ") === -1) {
+        if(gameState.indexOf(" ") === -1) {
             gameRunning = false
             console.log(`${dim}Its a tie...${reset}`)
             showScore()
@@ -156,7 +162,7 @@ const gameLoop = () => {
     if (gameRunning) {
         console.clear()
         playGame()
-        turnStatus === "no delay" ? gameLoop() : setTimeout(gameLoop, 100)
+        turnStatus === "no delay" ? gameLoop() : setTimeout(gameLoop, 500)
     }
 }
 
